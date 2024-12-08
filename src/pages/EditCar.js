@@ -19,7 +19,7 @@ function EditEquipment() {
 
     const fetchCarData = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/api/cars/getcarbyid/${id}`);
+        const response = await fetch(`https://marketplace-for-rental-equipment-backend.onrender.com/api/cars/getcarbyid/${id}`);
         const data = await response.json();
         setEquipment(data); // Set the fetched car data to equipment
       } catch (error) {

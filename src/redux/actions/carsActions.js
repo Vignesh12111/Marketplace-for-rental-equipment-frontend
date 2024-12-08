@@ -21,7 +21,7 @@ export const addCar=(reqObj)=>async dispatch=>{
     dispatch({type: 'LOADING' , payload:true})
 
     try {
-         await axios.post('http://localhost:5000/api/cars/addcar' , reqObj)
+         await axios.post('https://marketplace-for-rental-equipment-backend.onrender.com/api/cars/addcar' , reqObj)
        
          dispatch({type: 'LOADING' , payload:false})
          message.success('New car added successfully')
@@ -41,7 +41,7 @@ export const editCar=(reqObj)=>async dispatch=>{
     dispatch({type: 'LOADING' , payload:true})
 
     try {
-         await axios.post('http://localhost:5000/api/cars/editcar' , reqObj)
+         await axios.post('https://marketplace-for-rental-equipment-backend.onrender.com/api/cars/editcar' , reqObj)
        
          dispatch({type: 'LOADING' , payload:false})
          message.success('Car details updated successfully')
@@ -61,7 +61,7 @@ export const deleteCar=(reqObj)=>async dispatch=>{
     dispatch({type: 'LOADING' , payload:true})
 
     try {
-         await axios.post('http://localhost:5000/api/cars/deletecar' , reqObj)
+         await axios.post('https://marketplace-for-rental-equipment-backend.onrender.com/api/cars/deletecar' , reqObj)
        
          dispatch({type: 'LOADING' , payload:false})
          message.success('Car deleted successfully')

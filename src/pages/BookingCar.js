@@ -35,7 +35,7 @@ function BookingEquipment() {
     async function fetchEquipment() {
       try {
         setLoading(true);
-        const response = await axios.get(`http://localhost:5000/api/cars/getcarbyid/${id}`);
+        const response = await axios.get(`https://marketplace-for-rental-equipment-backend.onrender.com/api/cars/getcarbyid/${id}`);
         setEquipment(response.data);
         setLoading(false);
       } catch (error) {
