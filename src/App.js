@@ -53,7 +53,7 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: "/addcar",
+    path: "/addproduct",
     element: (
       <ProtectedRoute>
         <AddCar />
@@ -61,7 +61,7 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: "/editcar/:id",
+    path: "/editproduct/:id",
     element: (
       <ProtectedRoute>
         <EditCar />

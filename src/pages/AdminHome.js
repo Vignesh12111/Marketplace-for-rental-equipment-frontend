@@ -31,7 +31,7 @@ function AdminHome() {
           <div className="d-flex justify-content-between align-items-center">
             <h3 className="mt-1 mr-2">Admin Panel</h3>
             <button className="btn1">
-              <a href="/addcar">ADD CAR</a>
+              <a href="/addproduct">ADD CAR</a>
             </button>
           </div>
         </Col>
@@ -53,7 +53,7 @@ function AdminHome() {
                   </div>
 
                   <div className="mr-4">
-                    <Link to={`/editcar/${car._id}`}>
+                    <Link to={`/editproduct/${car._id}`}>
                       <EditOutlined
                         className="mr-3"
                         style={{ color: "green", cursor: "pointer" }}

@@ -22,11 +22,7 @@ function Login() {
             <Row gutter={16} className='d-flex align-items-center' >
 
                 <Col lg={16} style={{position: 'relative'}}>
-                    <img 
-                    className='w-100'
-                    data-aos='slide-right'
-                    data-aos-duration='1500'
-                    src="https://www.fatbit.com/fab/wp-content/uploads/2020/01/Online-Heavy-Equipment-Rental-Software-Business-Model.jpg"/>
+                    <h1 className='login-bg-text '>Welcome  to Rental Equipment</h1>
                 </Col>
                 <Col lg={8} className='text-left p-5'>
                     <Form layout='vertical' className='login-form p-5' onFinish={onFinish}>
