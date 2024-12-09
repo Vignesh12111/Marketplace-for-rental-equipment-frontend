@@ -1,157 +1,142 @@
-import React, { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import DefaultLayout from '../components/DefaultLayout';
-import { getAllCars } from '../redux/actions/carsActions';
-import { Col, Row, Divider, DatePicker, Checkbox, Input } from 'antd';
-import { Link } from 'react-router-dom';
-import Spinner from '../components/Spinner';
-import moment from 'moment';
-import Fuse from 'fuse.js';
+import React, { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import DefaultLayout from "../components/DefaultLayout";
+import { getAllCars } from "../redux/actions/carsActions";
+import { Col, Row, DatePicker, Input, Card, Button, Typography, Slider } from "antd";
+import { Link } from "react-router-dom";
+import Spinner from "../components/Spinner";
+import moment from "moment";
+import Fuse from "fuse.js";
 
 const { RangePicker } = DatePicker;
+const { Title, Text } = Typography;
 
 function Home() {
   const { cars } = useSelector((state) => state.carsReducer);
   const { loading } = useSelector((state) => state.alertsReducer);
-  const [totalCars, setTotalcars] = useState([]);
   const [filteredCars, setFilteredCars] = useState([]);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [minRent, setMinRent] = useState('');
-  const [maxRent, setMaxRent] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [priceRange, setPriceRange] = useState([0, 500]);
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(getAllCars());
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
-    setTotalcars(cars);
     setFilteredCars(cars);
   }, [cars]);
 
   function setFilter(values) {
-    var selectedFrom = moment(values[0], 'MMM DD yyyy HH:mm');
-    var selectedTo = moment(values[1], 'MMM DD yyyy HH:mm');
+    const selectedFrom = moment(values[0], "MMM DD yyyy HH:mm");
+    const selectedTo = moment(values[1], "MMM DD yyyy HH:mm");
 
-    var temp = [];
-
-    for (var car of cars) {
-      if (car.bookedTimeSlots.length == 0) {
-        temp.push(car);
-      } else {
-        for (var booking of car.bookedTimeSlots) {
-          if (
-            selectedFrom.isBetween(booking.from, booking.to) ||
-            selectedTo.isBetween(booking.from, booking.to) ||
-            moment(booking.from).isBetween(selectedFrom, selectedTo) ||
-            moment(booking.to).isBetween(selectedFrom, selectedTo)
-          ) {
-          } else {
-            temp.push(car);
-          }
-        }
-      }
-    }
-
-    setTotalcars(temp);
-    filterCars(temp);
-  }
-
-  function handleSearch(query) {
-    setSearchQuery(query);
-    filterCars(totalCars, query, minRent, maxRent);
-  }
-
-  function handleRentFilter(min, max) {
-    setMinRent(min);
-    setMaxRent(max);
-    filterCars(totalCars, searchQuery, min, max);
-  }
-
-  function filterCars(carsToFilter, query = '', min = '', max = '') {
-    let filtered = carsToFilter;
-
-    // Filter by rent
-    if (min || max) {
-      filtered = filtered.filter(
-        (car) =>
-          (!min || car.rentPerHour >= min) && (!max || car.rentPerHour <= max)
-      );
-    }
-
-    // Search by car name using fuse.js
-    if (query) {
-      const fuse = new Fuse(filtered, {
-        keys: ['name'],
-        threshold: 0.3,
+    const filtered = cars.filter((car) => {
+      return car.bookedTimeSlots.every((booking) => {
+        const bookingFrom = moment(booking.from);
+        const bookingTo = moment(booking.to);
+        return (
+          !selectedFrom.isBetween(bookingFrom, bookingTo) &&
+          !selectedTo.isBetween(bookingFrom, bookingTo) &&
+          !bookingFrom.isBetween(selectedFrom, selectedTo) &&
+          !bookingTo.isBetween(selectedFrom, selectedTo)
+        );
       });
-      filtered = fuse.search(query).map((result) => result.item);
-    }
+    });
 
     setFilteredCars(filtered);
   }
 
+  function handleSearch(query) {
+    setSearchQuery(query);
+
+    const fuse = new Fuse(cars, {
+      keys: ["name"],
+      threshold: 0.3,
+    });
+
+    const results = query ? fuse.search(query).map((result) => result.item) : cars;
+    setFilteredCars(results.filter((car) => car.rentPerHour >= priceRange[0] && car.rentPerHour <= priceRange[1]));
+  }
+
+  function handlePriceFilter(range) {
+    setPriceRange(range);
+    setFilteredCars(
+      cars.filter(
+        (car) =>
+          car.rentPerHour >= range[0] &&
+          car.rentPerHour <= range[1] &&
+          car.name.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    );
+  }
+
   return (
     <DefaultLayout>
-      <Row className="mt-3" justify="center">
-        <Col lg={20} sm={24} className="d-flex justify-content-left">
-          <RangePicker
-            showTime={{ format: 'HH:mm' }}
-            format="MMM DD yyyy HH:mm"
-            onChange={setFilter}
-          />
-        </Col>
-        <Col lg={20} sm={24} className="d-flex justify-content-left mt-3">
-          <Input
-            placeholder="Search by car name"
-            value={searchQuery}
-            onChange={(e) => handleSearch(e.target.value)}
-          />
-        </Col>
-        <Col lg={20} sm={24} className="d-flex justify-content-left mt-3">
-          <div>
-            <label>Min Rent: </label>
-            <input
-              type="number"
-              value={minRent}
-              onChange={(e) => handleRentFilter(e.target.value, maxRent)}
+      <div style={{ padding: "20px" }}>
+        {/* Filter Section */}
+        <Row gutter={16} className="mb-4">
+          <Col lg={8} sm={24}>
+            <RangePicker
+              showTime={{ format: "HH:mm" }}
+              format="MMM DD yyyy HH:mm"
+              onChange={setFilter}
+              style={{ width: "100%" }}
             />
-            <label> Max Rent: </label>
-            <input
-              type="number"
-              value={maxRent}
-              onChange={(e) => handleRentFilter(minRent, e.target.value)}
+          </Col>
+          <Col lg={8} sm={24}>
+            <Input
+              placeholder="Search by Rental Equipment name"
+              value={searchQuery}
+              onChange={(e) => handleSearch(e.target.value)}
+              style={{ width: "100%" }}
             />
-          </div>
-        </Col>
-      </Row>
+          </Col>
+          <Col lg={8} sm={24}>
+            <div>
+              <Text>Filter by Rent (₹):</Text>
+              <Slider
+                range
+                min={0}
+                max={500}
+                step={10}
+                defaultValue={priceRange}
+                onChange={handlePriceFilter}
+              />
+              <Text>
+                ₹{priceRange[0]} - ₹{priceRange[1]}
+              </Text>
+            </div>
+          </Col>
+        </Row>
 
-      {loading && <Spinner />}
+        {loading && <Spinner />}
 
-      <Row justify="center" gutter={16}>
-        {filteredCars.map((car) => {
-          return (
-            <Col lg={5} sm={24} xs={24} key={car._id}>
-              <div className="car p-2 bs1">
-                <img src={car.image} className="carimg" alt={car.name} />
-
-                <div className="car-content d-flex align-items-center justify-content-between">
-                  <div className="text-left pl-2">
-                    <p>{car.name}</p>
-                    <p> Rent Per Hour {car.rentPerHour} /-</p>
-                  </div>
-
-                  <div>
-                    <button className="btn1 mr-2">
-                      <Link to={`/booking/${car._id}`}>Book Now</Link>
-                    </button>
-                  </div>
-                </div>
-              </div>
+        {/* Car Cards Section */}
+        <Row gutter={[16, 16]}>
+          {filteredCars.map((car) => (
+            <Col lg={6} sm={12} xs={24} key={car._id}>
+              <Card
+                hoverable
+                cover={
+                  <img
+                    src={car.image}
+                    alt={car.name}
+                    style={{ height: "200px", objectFit: "cover", borderRadius: "10px" }}
+                  />
+                }
+              >
+                <Title level={5}>{car.name}</Title>
+                <Text>Rent Per Hour: ₹{car.rentPerHour}</Text>
+                <br />
+                <Button type="primary" className="mt-2">
+                  <Link to={`/booking/${car._id}`}>Book Now</Link>
+                </Button>
+              </Card>
             </Col>
-          );
-        })}
-      </Row>
+          ))}
+        </Row>
+      </div>
     </DefaultLayout>
   );
 }

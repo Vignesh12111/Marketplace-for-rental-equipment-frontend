@@ -2,81 +2,83 @@ import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import DefaultLayout from "../components/DefaultLayout";
 import { deleteCar, getAllCars } from "../redux/actions/carsActions";
-import { Col, Row, Divider, DatePicker, Checkbox, Edit } from "antd";
+import { Col, Row, Popconfirm, Button, Card, Typography, message } from "antd";
 import { Link } from "react-router-dom";
 import Spinner from "../components/Spinner";
-import moment from "moment";
-import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
-import { Popconfirm, message } from "antd";
-const { RangePicker } = DatePicker;
+import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons";
+
+const { Title, Text } = Typography;
 
 function AdminHome() {
   const { cars } = useSelector((state) => state.carsReducer);
   const { loading } = useSelector((state) => state.alertsReducer);
-  const [totalCars, setTotalcars] = useState([]);
+  const [totalCars, setTotalCars] = useState([]);
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(getAllCars());
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
-    setTotalcars(cars);
+    setTotalCars(cars);
   }, [cars]);
+
+  const handleDeleteCar = (carId) => {
+    dispatch(deleteCar({ carid: carId }));
+    message.success("Car deleted successfully!");
+  };
 
   return (
     <DefaultLayout>
-      <Row justify="center" gutter={16} className="mt-2">
-        <Col lg={20} sm={24}>
-          <div className="d-flex justify-content-between align-items-center">
-            <h3 className="mt-1 mr-2">Admin Panel</h3>
-            <button className="btn1">
-              <a href="/addproduct">ADD CAR</a>
-            </button>
-          </div>
+      {/* Header Section */}
+      <Row justify="center" className="mt-4 mb-4">
+        <Col lg={20} sm={24} className="d-flex justify-content-between align-items-center">
+          <Title level={3}>Admin Panel</Title>
+          <Link to="/addproduct">
+            <Button type="primary" icon={<PlusOutlined />}>
+              Add Equiplnent
+            </Button>
+          </Link>
         </Col>
       </Row>
 
-      {loading == true && <Spinner />}
+      {/* Spinner for loading state */}
+      {loading && <Spinner />}
 
-      <Row justify="center" gutter={16}>
-        {totalCars.map((car) => {
-          return (
-            <Col lg={5} sm={24} xs={24}>
-              <div className="car p-2 bs1">
-                <img src={car.image} className="carimg" />
-
-                <div className="car-content d-flex align-items-center justify-content-between">
-                  <div className="text-left pl-2">
-                    <p>{car.name}</p>
-                    <p> Rent Per Hour {car.rentPerHour} /-</p>
-                  </div>
-
-                  <div className="mr-4">
-                    <Link to={`/editproduct/${car._id}`}>
-                      <EditOutlined
-                        className="mr-3"
-                        style={{ color: "green", cursor: "pointer" }}
-                      />
-                    </Link>
-
-                    <Popconfirm
-                      title="Are you sure to delete this car?"
-                      onConfirm={()=>{dispatch(deleteCar({carid : car._id}))}}
-                      
-                      okText="Yes"
-                      cancelText="No"
-                    >
-                      <DeleteOutlined
-                        style={{ color: "red", cursor: "pointer" }}
-                      />
-                    </Popconfirm>
-                  </div>
+      {/* Car Cards Section */}
+      <Row justify="center" gutter={[16, 16]}>
+        {totalCars.map((car) => (
+          <Col lg={6} sm={12} xs={24} key={car._id}>
+            <Card
+              hoverable
+              cover={
+                <img
+                  src={car.image}
+                  alt={car.name}
+                  style={{ height: "200px", objectFit: "cover", borderRadius: "10px" }}
+                />
+              }
+            >
+              <div className="card-content">
+                <Title level={5}>{car.name}</Title>
+                <Text>Rent Per Hour: ₹{car.rentPerHour}</Text>
+                <div className="d-flex justify-content-end mt-3">
+                  <Link to={`/editproduct/${car._id}`}>
+                    <Button type="text" icon={<EditOutlined />} style={{ color: "green" }} />
+                  </Link>
+                  <Popconfirm
+                    title="Are you sure to delete this car?"
+                    onConfirm={() => handleDeleteCar(car._id)}
+                    okText="Yes"
+                    cancelText="No"
+                  >
+                    <Button type="text" icon={<DeleteOutlined />} style={{ color: "red" }} />
+                  </Popconfirm>
                 </div>
               </div>
-            </Col>
-          );
-        })}
+            </Card>
+          </Col>
+        ))}
       </Row>
     </DefaultLayout>
   );
