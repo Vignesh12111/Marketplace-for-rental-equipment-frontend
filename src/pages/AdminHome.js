@@ -67,7 +67,7 @@ function AdminHome() {
                     <Button type="text" icon={<EditOutlined />} style={{ color: "green" }} />
                   </Link>
                   <Popconfirm
-                    title="Are you sure to delete this car?"
+                    title="Are you sure to delete this Rental Equipment?"
                     onConfirm={() => handleDeleteCar(car._id)}
                     okText="Yes"
                     cancelText="No"
