@@ -3,14 +3,13 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import DefaultLayout from "../components/DefaultLayout";
 import Spinner from "../components/Spinner";
-import { editCar, getAllCars } from "../redux/actions/carsActions";
+import { editCar } from "../redux/actions/carsActions";
 import { useParams } from "react-router-dom";
 
 const { Title } = Typography;
 
 function EditEquipment() {
   const { id } = useParams();
-  const { cars } = useSelector((state) => state.carsReducer);
   const dispatch = useDispatch();
   const { loading } = useSelector((state) => state.alertsReducer);
   const [equipment, setEquipment] = useState(null);

@@ -26,7 +26,7 @@ export const userRegister=(reqObj)=>async dispatch=>{
     dispatch({type: 'LOADING' , payload:true})
 
     try {
-        const response = await axios.post('https://marketplace-for-rental-equipment-backend.onrender.com/api/users/register' , reqObj)
+        await axios.post('https://marketplace-for-rental-equipment-backend.onrender.com/api/users/register' , reqObj)
         message.success('Registration successfull')
         setTimeout(() => {
             window.location.href='/login'
@@ -34,6 +34,7 @@ export const userRegister=(reqObj)=>async dispatch=>{
         }, 500);
        
         dispatch({type: 'LOADING' , payload:false})
+        
         
     } catch (error) {
         console.log(error)

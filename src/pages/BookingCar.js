@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import { useSelector, useDispatch } from "react-redux";
+import {  useDispatch } from "react-redux";
 import DefaultLayout from "../components/DefaultLayout";
 import Spinner from "../components/Spinner";
-import { getAllCars } from "../redux/actions/carsActions";
 import { bookCar } from "../redux/actions/bookingActions";
 import { DatePicker, Row, Col, Divider, Checkbox, Modal, Card, Typography, Button } from "antd";
 import StripeCheckout from "react-stripe-checkout";
